@@ -1,0 +1,38 @@
+AI ACT
+│
+├── Recitals
+│   ├── (1)
+│   ├── (2)
+│   ├── ...
+│   └── (180)
+│
+├── CHAPTER I — GENERAL PROVISIONS
+│   ├── Article 1 — Subject matter
+│   ├── Article 2 — Scope
+│   ├── Article 3 — Definitions
+│   └── ...
+│
+├── CHAPTER II — PROHIBITED AI PRACTICES
+│   ├── Article 5
+│   └── ...
+│
+├── ...
+│
+└── Annexes
+
+
+Article 65
+│
+├── 1.      → paragraph
+├── 2.      → paragraph
+├── 3.      → paragraph
+├── 4.      → paragraph
+│   ├── (a)  → point
+│   ├── (b)  → point
+│   └── (c)  → point
+├── 5.      → paragraph
+├── 6.      → paragraph
+└── 7.      → paragraph
+
+MODEL = "intfloat/multilingual-e5-base" training:
+Okay my understanding is for example with wikipedia: Title of wiki page goes in -> model produces embedding, four new inputs (with one being the corresponding wikipedia passage) -> four embeddings. Now the similarity between the title and passage should be maximized, while the similarity to the unreleated should be minimized via back propagation
