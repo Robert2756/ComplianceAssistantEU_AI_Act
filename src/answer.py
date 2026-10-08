@@ -40,7 +40,12 @@ SOURCES:
 QUESTION: {question}
 ANSWER:"""
 
-print(build_prompt_RAG("Which AI systems are prohibited?", k=5))
+print(build_prompt_RAG("Which AI systems are prohibited?", k=3))
 
+# with RAG
+answer = generate(build_prompt_RAG("Which AI systems are prohibited?", k=3), MODEL)
+print("Answer: ", answer)
+
+# no RAG
 # answer = generate(build_prompt_noRAG("Which AI systems are prohibited?", k=5), MODEL)
 # print("Answer: ", answer)
