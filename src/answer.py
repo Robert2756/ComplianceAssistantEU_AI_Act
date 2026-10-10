@@ -30,6 +30,11 @@ def build_prompt_noRAG(question):
     html = open("data/ai_act.html", encoding="utf-8").read()
     text = BeautifulSoup(html, "lxml").get_text("\n")
     text = re.sub(r"\n\s*\n+", "\n", text)
+    # cut the recitals of the ai act -> context length fits llama3.1 max context length
+    m = re.search(r"HAVE ADOPTED THIS REGULATION:?", text, re.I)
+    assert m, "marker not found"
+    text = text[m.end():].strip()
+    
     return f"""Answer the question using ONLY the sources below.
 Cite the article for every claim, e.g. (Art. 5).
 If the sources do not contain the answer, say so.
@@ -44,8 +49,10 @@ ANSWER:"""
 
 # with RAG
 answer = generate(build_prompt_RAG("Which AI systems are prohibited?", k=5), MODEL)
-print("Answer: ", answer)
+# print("Answer: ", answer)
 
 # no RAG
-answer = generate(build_prompt_noRAG("Which AI systems are prohibited?"), MODEL)
-print("Answer: ", answer)
+text = build_prompt_noRAG("Which AI systems are prohibited?")
+print(len(text), "characters, about", len(text) // 4, "tokens")
+answer = generate(text, MODEL, num_ctx=110000, timeout=3600) # increase context length of model to max -> whole ai act fits in
+# print("Answer: ", answer)
