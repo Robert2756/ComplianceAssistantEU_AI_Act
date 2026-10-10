@@ -8,7 +8,7 @@ def split_long(body, max_words=250, overlap=40):
     # split at numbered paragraphs: "1." -> keep (a), (b), ... connected for now
     paras = re.split(r"\n(?=(?:\d+\.)\s)", body)
 
-    # pack small paragraphs together, window-split oversized ones
+    # pack small paragraphs together, window-split oversized ones over 250 words
     out, cur = [], ""
     for para in paras:
         words = para.split()
@@ -112,3 +112,15 @@ for p in parts:
 
 json.dump(chunks, open("data/chunks.json", "w"), ensure_ascii=False, indent=1)
 print(len(chunks), "chunks")
+
+
+# TO DO:
+# Retrieve the two COMPLETE articles with the highest embedding similarity
+# Fixes missing points in the RAG prompt that only uses the top 5 chunks of articles
+# For a compliance question, an incomplete answer is the worst failure.
+# RAG keeps its advantage in speed, memory and focus
+# 
+# articles should be ranked based on their best chunk's embedding similarity to the query
+# take the top scoring complete article ALWAYS in the prompt
+# each further arcticle ONLY if its score is within a margin of the top score and fits in the remaining word budget
+# cap at three articles
