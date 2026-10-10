@@ -14,7 +14,7 @@ print("embeddings shape:", emb.shape)
 
 def search(query, k=5, per_article=2):
     # take only the top 2 chunks per article so that the following LLM prompt receives chunks from other articles
-    # remove since articles are incomplete
+    # remove per_article since articles are incomplete
     q = model.encode([f"query: {query}"], normalize_embeddings=True)[0]
     scores = emb @ q
     out, seen = [], {}

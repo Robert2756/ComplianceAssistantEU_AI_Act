@@ -36,3 +36,5 @@ Article 65
 
 MODEL = "intfloat/multilingual-e5-base" training:
 Okay my understanding is for example with wikipedia: Title of wiki page goes in -> model produces embedding, four new inputs (with one being the corresponding wikipedia passage) -> four embeddings. Now the similarity between the title and passage should be maximized, while the similarity to the unreleated should be minimized via back propagation
+
+ollama server settings: OLLAMA_FLASH_ATTENTION=1 OLLAMA_KV_CACHE_TYPE=q8_0 ollama serve

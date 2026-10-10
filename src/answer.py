@@ -1,6 +1,6 @@
-# LLM Prompt
+import time
 from index import search
-from llm import generate
+from llm import generate_stream
 
 import re, json
 from bs4 import BeautifulSoup
@@ -27,14 +27,8 @@ QUESTION: {question}
 ANSWER:"""
 
 def build_prompt_noRAG(question):
-    html = open("data/ai_act.html", encoding="utf-8").read()
-    text = BeautifulSoup(html, "lxml").get_text("\n")
-    text = re.sub(r"\n\s*\n+", "\n", text)
-    # cut the recitals of the ai act -> context length fits llama3.1 max context length
-    m = re.search(r"HAVE ADOPTED THIS REGULATION:?", text, re.I)
-    assert m, "marker not found"
-    text = text[m.end():].strip()
-    
+    text = open("data/ai_act_clean.txt", encoding="utf-8").read()
+
     return f"""Answer the question using ONLY the sources below.
 Cite the article for every claim, e.g. (Art. 5).
 If the sources do not contain the answer, say so.
@@ -45,14 +39,16 @@ SOURCES:
 QUESTION: {question}
 ANSWER:"""
 
-# print("Prompt: ", build_prompt_RAG("Which AI systems are prohibited?", k=5))
+print("Prompt: ", build_prompt_RAG("Which AI systems are prohibited?", k=5), "\n\n")
 
 # with RAG
-answer = generate(build_prompt_RAG("Which AI systems are prohibited?", k=5), MODEL)
-# print("Answer: ", answer)
+print("RAG")
+answer = generate_stream(build_prompt_RAG("Which AI systems are prohibited?", k=5), MODEL)
+print("Answer RAG: ", answer, "\n\n")
 
 # no RAG
+print("NO RAG")
 text = build_prompt_noRAG("Which AI systems are prohibited?")
-print(len(text), "characters, about", len(text) // 4, "tokens")
-answer = generate(text, MODEL, num_ctx=110000, timeout=3600) # increase context length of model to max -> whole ai act fits in
-# print("Answer: ", answer)
+print(len(text), "characters, about", len(text) // 4, "tokens") # 339892 characters, about 84973 tokens
+answer = generate_stream(text, MODEL, num_ctx=110000, timeout=3600) # increase context length of model to max -> whole cleaned ai act fits in
+print("Answer no RAG: ", answer, "\n\n")
