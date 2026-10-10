@@ -26,7 +26,7 @@ SOURCES:
 QUESTION: {question}
 ANSWER:"""
 
-def build_prompt_noRAG(question, k=5):
+def build_prompt_noRAG(question):
     html = open("data/ai_act.html", encoding="utf-8").read()
     text = BeautifulSoup(html, "lxml").get_text("\n")
     text = re.sub(r"\n\s*\n+", "\n", text)
@@ -40,12 +40,12 @@ SOURCES:
 QUESTION: {question}
 ANSWER:"""
 
-print(build_prompt_RAG("Which AI systems are prohibited?", k=3))
+# print("Prompt: ", build_prompt_RAG("Which AI systems are prohibited?", k=5))
 
 # with RAG
-answer = generate(build_prompt_RAG("Which AI systems are prohibited?", k=3), MODEL)
+answer = generate(build_prompt_RAG("Which AI systems are prohibited?", k=5), MODEL)
 print("Answer: ", answer)
 
 # no RAG
-# answer = generate(build_prompt_noRAG("Which AI systems are prohibited?", k=5), MODEL)
-# print("Answer: ", answer)
+answer = generate(build_prompt_noRAG("Which AI systems are prohibited?"), MODEL)
+print("Answer: ", answer)
