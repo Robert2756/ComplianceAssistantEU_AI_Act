@@ -1,6 +1,6 @@
 # EU AI Act Compliance Assistant
 
-Eine Retrieval-Augmented-Generation-Pipeline (RAG) für Fragen zum EU AI Act. Sie läuft lokal: `multilingual-e5-base` für die Suche und `llama3.1:8b` (über Ollama) für die Antwortgenerierung.
+Antworten zu relevanten AI Fragen sollen mit Referenz zum AI Act mithilfe einer Retrieval-Augmented-Generation-Pipeline (RAG)ausgegeben werden. Sie Pieline läuft lokal: `multilingual-e5-base` für die Suche und `llama3.1:8b` (über Ollama) für die Antwortgenerierung.
 
 ## Pipeline: mit RAG
 

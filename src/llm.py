@@ -1,11 +1,11 @@
 import requests, json, time, threading
 
-def generate_stream(prompt, model, num_ctx=8192, timeout=3600):
+def generate_stream(prompt, model, num_ctx=8192, timeout=3600, seed=42, num_predict=1500):
     t0 = time.time()
     stop = threading.Event()
 
     def ticker():
-        while not stop.wait(15):                      # every 15 s
+        while not stop.wait(15):
             print(f"  [{time.time() - t0:.0f}s elapsed]", flush=True)
     threading.Thread(target=ticker, daemon=True).start()
 
@@ -14,7 +14,7 @@ def generate_stream(prompt, model, num_ctx=8192, timeout=3600):
         with requests.post(
             "http://localhost:11434/api/generate",
             json={"model": model, "prompt": prompt, "stream": True,
-                  "options": {"temperature": 0, "num_ctx": num_ctx}},
+                  "options": {"temperature": 0, "seed": seed,"num_ctx": num_ctx, "num_predict": num_predict}},
             stream=True, timeout=timeout,
         ) as r:
             r.raise_for_status()

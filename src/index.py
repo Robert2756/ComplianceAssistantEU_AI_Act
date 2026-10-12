@@ -14,36 +14,27 @@ assert emb.shape[0] == len(chunks) and sha == meta["chunks_sha"], \
 model = SentenceTransformer(meta["model"])   # only the query side is encoded at runtime -> question
 
 # rank chunks by the best score out of its article chunks
-def build_context(question, budget_words=4000, max_articles=3, margin=0.04):
-    hits = search(question) # sorted by score
-    ranked, by_key, best = [], {}, {} # ranked -> list of article keys in order, by_key -> dict of article key to list of chunks, best -> dict of article key to best score
-    for c, s in hits:
-        key = c["id"].rsplit("-", 1)[0] # extract article key
-        if key not in by_key:
-            by_key[key] = []
-            ranked.append(key)
-            best[key] = s # first hit = best score for this article
-        by_key[key].append(c)
+def rank_articles(question):
+    q = model.encode([f"query: {question}"], normalize_embeddings=True)[0]
+    scores = emb @ q
+    best = {}
+    for i in np.argsort(-scores): # best chunk first
+        key = chunks[i]["id"].rsplit("-", 1)[0]
+        best.setdefault(key, float(scores[i])) # first hit = best score for that article
+    return list(best.items()) # [(article_key, score), ...] sorted desc
 
-    top = best[ranked[0]]
-    blocks, used = [], 0
-    for n, key in enumerate(ranked[:max_articles]):
-        if n > 0 and best[key] < top - margin:
-            break # too far behind the top article
+
+def build_context(question, budget_words=4000, max_articles=3, margin=0.04):
+    ranked = rank_articles(question)
+    top = ranked[0][1]
+    blocks, selected, used = [], [], 0
+    for n, (key, score) in enumerate(ranked[:max_articles]):
+        if n > 0 and score < top - margin:
+            break
         full = articles[key]
         w = len(full.split())
-        if n > 0 and used + w > budget_words: # never dropt the first article no matter its length otherwise context empty
-            continue # article does not fit -> drop it, better dropping instead of incomplete
-        blocks.append(full)
-        used += w
-    return "\n\n".join(blocks)
-
-def search(query):
-    # remove per_article since articles are incomplete
-    q = model.encode([f"query: {query}"], normalize_embeddings=True)[0]
-    scores = emb @ q
-    out = []
-    for i in np.argsort(-scores):
-        c = chunks[i]
-        out.append((c, float(scores[i])))
-    return out
+        if n > 0 and used + w > budget_words:
+            continue
+        blocks.append(full); selected.append(key); used += w
+    return {"text": "\n\n".join(blocks), "keys": selected,
+            "ranking": ranked, "words": used}
