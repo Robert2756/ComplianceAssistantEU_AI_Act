@@ -1,5 +1,4 @@
 import re, json
-import time
 from bs4 import BeautifulSoup
 
 def split_long(body, max_words=250, overlap=40):
@@ -29,29 +28,6 @@ def split_long(body, max_words=250, overlap=40):
     if cur:
         out.append(cur)
     return out
-
-def roman_to_int(s):
-    values = {
-        "I": 1,
-        "V": 5,
-        "X": 10,
-        "L": 50,
-        "C": 100,
-        "D": 500,
-        "M": 1000
-    }
-
-    total = 0
-    prev = 0
-
-    for char in reversed(s):
-        value = values[char]
-        if value < prev:
-            total -= value
-        else:
-            total += value
-        prev = value
-    return total
 
 html = open("data/ai_act.html", encoding="utf-8").read()
 text = BeautifulSoup(html, "lxml").get_text("\n")
@@ -115,15 +91,3 @@ for p in parts:
 json.dump(chunks, open("data/chunks.json", "w"), ensure_ascii=False, indent=1)
 json.dump(articles, open("data/articles.json", "w"), ensure_ascii=False, indent=1)
 print(len(chunks), "chunks")
-
-
-# TO DO:
-# Retrieve the two COMPLETE articles with the highest embedding similarity
-# Fixes missing points in the RAG prompt that only uses the top 5 chunks of articles
-# For a compliance question, an incomplete answer is the worst failure.
-# RAG keeps its advantage in speed, memory and focus
-# 
-# articles should be ranked based on their best chunk's embedding similarity to the query
-# take the top scoring complete article ALWAYS in the prompt
-# each further arcticle ONLY if its score is within a margin of the top score and fits in the remaining word budget
-# cap at three articles
