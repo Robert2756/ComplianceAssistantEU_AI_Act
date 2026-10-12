@@ -1,5 +1,5 @@
 import time
-from index import search
+from index import build_context
 from llm import generate_stream
 
 import re, json
@@ -13,7 +13,7 @@ def label(c):
     return f"Art. {c['article']}"
 
 def build_prompt_RAG(question, k=5):
-    hits = search(question, k)
+    hits = build_context(question, k)
     context = "\n\n".join(
         f"[{label(c)}, {c['title']}]\n{c['text']}" for c, _ in hits)
     return f"""Answer the question using ONLY the sources below.

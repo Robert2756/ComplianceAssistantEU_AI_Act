@@ -86,6 +86,7 @@ print(n_art, "articles,", n_annex, "annexes")      # expected: 113 and 13
 clean_text = "\n\n".join(parts)
 open("data/ai_act_clean.txt", "w", encoding="utf-8").write(clean_text)
 
+articles = {}
 chunks = []
 for p in parts:
     m = re.match(r"Article\s+(\d+)\n(.*?)\n", p)
@@ -100,6 +101,7 @@ for p in parts:
         header = f"Annex {num} - {title}"
 
     body = p[m.end():].strip()
+    articles[f"{kind}{num}"] = f"{header}\n{body}"
     for i, piece in enumerate(split_long(body)):
         chunks.append({
             "id": f"{kind}{num}-{i}",
@@ -111,6 +113,7 @@ for p in parts:
         })
 
 json.dump(chunks, open("data/chunks.json", "w"), ensure_ascii=False, indent=1)
+json.dump(articles, open("data/articles.json", "w"), ensure_ascii=False, indent=1)
 print(len(chunks), "chunks")
 
 
