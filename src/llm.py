@@ -37,4 +37,4 @@ def generate_stream(prompt, model, num_ctx=8192, timeout=3600, seed=42, num_pred
           f"prompt processing: {stats.get('prompt_eval_duration', 0) / 1e9:.1f}s | "
           f"generation: {stats.get('eval_duration', 0) / 1e9:.1f}s "
           f"({stats.get('eval_count')} tokens)")
-    return "".join(out)
+    return "".join(out), stats

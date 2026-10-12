@@ -100,7 +100,11 @@ def main():
         save({
             "id": q["id"], "arm": arm, "model": MODEL, "seed": SEED,
             "timestamp": datetime.now().isoformat(timespec="seconds"),
-            "question": q["question"], "prompt": prompt, "answer": answer,
+            "question": q["question"], "prompt": (
+                                            prompt.split("SOURCES:", 1)[0] + "SOURCES:"
+                                            if arm == "full"
+                                            else prompt
+                                        ), "answer": answer,
             "num_ctx": num_ctx, "est_prompt_tokens": len(prompt) // 4,
             "prompt_tokens": st.get("prompt_eval_count"),
             "output_tokens": st.get("eval_count"),
