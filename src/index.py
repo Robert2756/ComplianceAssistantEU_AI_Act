@@ -1,21 +1,21 @@
-import json, numpy as np
-import time
+import json, hashlib
+import numpy as np
 from sentence_transformers import SentenceTransformer
 
-MODEL = "intfloat/multilingual-e5-base"   # alternativ ein kleineres Modell zum Testen
-model = SentenceTransformer(MODEL)
 chunks = json.load(open("data/chunks.json"))
 articles = json.load(open("data/articles.json"))
+emb = np.load("data/emb.npy")
+meta = json.load(open("data/emb_meta.json"))
 
-# create embedding as vector of numbers for each chunk of text
-emb = model.encode([f"passage: {c['text']}" for c in chunks],
-                   normalize_embeddings=True, show_progress_bar=True)
-np.save("data/emb.npy", emb) # embeddings shape: (126, 768)
-print("embeddings shape:", emb.shape)
+# fail loudly if ingest was changed but not re-run
+sha = hashlib.sha256(json.dumps(chunks, ensure_ascii=False).encode()).hexdigest()
+assert emb.shape[0] == len(chunks) and sha == meta["chunks_sha"], \
+    "emb.npy is stale: re-run ingest.py"
+model = SentenceTransformer(meta["model"])   # only the query side is encoded at runtime -> question
 
 # rank chunks by the best score out of its article chunks
 def build_context(question, budget_words=4000, max_articles=3, margin=0.04):
-    hits = search(question, 20) # sorted by score
+    hits = search(question) # sorted by score
     ranked, by_key, best = [], {}, {} # ranked -> list of article keys in order, by_key -> dict of article key to list of chunks, best -> dict of article key to best score
     for c, s in hits:
         key = c["id"].rsplit("-", 1)[0] # extract article key
@@ -38,18 +38,12 @@ def build_context(question, budget_words=4000, max_articles=3, margin=0.04):
         used += w
     return "\n\n".join(blocks)
 
-def search(query, k=5):
+def search(query):
     # remove per_article since articles are incomplete
     q = model.encode([f"query: {query}"], normalize_embeddings=True)[0]
     scores = emb @ q
-    out, seen = [], {}
+    out = []
     for i in np.argsort(-scores):
         c = chunks[i]
-        key = c["id"].rsplit("-", 1)[0]
-        # if seen.get(key, 0) >= per_article:
-        #     continue
-        # seen[key] = seen.get(key, 0) + 1
         out.append((c, float(scores[i])))
-        if len(out) == k:
-            break
     return out

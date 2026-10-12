@@ -31,7 +31,7 @@ def build_prompt_noRAG(question):
     text = open("data/ai_act_clean.txt", encoding="utf-8").read()
 
     return f"""Answer the question using ONLY the sources below.
-Cite the article for every claim.
+Cite the article or annexfor every claim.
 If the sources do not contain the answer, say so.
 
 SOURCES:

@@ -91,3 +91,29 @@ for p in parts:
 json.dump(chunks, open("data/chunks.json", "w"), ensure_ascii=False, indent=1)
 json.dump(articles, open("data/articles.json", "w"), ensure_ascii=False, indent=1)
 print(len(chunks), "chunks")
+
+# compute embeddings for all chunks once and save them
+import numpy as np, hashlib
+from sentence_transformers import SentenceTransformer
+
+EMB_MODEL = "intfloat/multilingual-e5-base"
+model = SentenceTransformer(EMB_MODEL)
+
+emb = model.encode(
+    [f"passage: {c['text']}" for c in chunks],   # e5 needs the "passage: " prefix
+    normalize_embeddings=True,
+    show_progress_bar=True,
+)
+assert emb.shape[0] == len(chunks)
+np.save("data/emb.npy", emb)
+
+# fingerprint so index.py can detect stale embeddings (chunks changed, emb not rebuilt)
+meta = {
+    "model": EMB_MODEL,
+    "n_chunks": len(chunks),
+    "chunks_sha": hashlib.sha256(
+        json.dumps(chunks, ensure_ascii=False).encode()
+    ).hexdigest(),
+}
+json.dump(meta, open("data/emb_meta.json", "w"), indent=1)
+print("embeddings shape:", emb.shape)
