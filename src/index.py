@@ -15,7 +15,7 @@ print("embeddings shape:", emb.shape)
 
 # rank chunks by the best score out of its article chunks
 def build_context(question, budget_words=4000, max_articles=3, margin=0.04):
-    hits = search(question, 20)      # sorted by score
+    hits = search(question, 20) # sorted by score
     ranked, by_key, best = [], {}, {} # ranked -> list of article keys in order, by_key -> dict of article key to list of chunks, best -> dict of article key to best score
     for c, s in hits:
         key = c["id"].rsplit("-", 1)[0] # extract article key
