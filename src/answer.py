@@ -31,7 +31,7 @@ def build_prompt_noRAG(question):
     text = open("data/ai_act_clean.txt", encoding="utf-8").read()
 
     return f"""Answer the question using ONLY the sources below.
-Cite the article for every claim, e.g. (Art. 5).
+Cite the article for every claim.
 If the sources do not contain the answer, say so.
 
 SOURCES:
@@ -44,7 +44,7 @@ ANSWER:"""
 
 # with RAG
 print("RAG")
-text_RAG = build_prompt_RAG("Which AI systems are prohibited?", k=5)
+text_RAG = build_prompt_RAG("Which AI systems are prohibited?")
 answer = generate_stream(text_RAG, MODEL, num_ctx=pick_num_ctx(text_RAG), timeout=3600)
 # print("Answer RAG: ", answer, "\n\n")
 

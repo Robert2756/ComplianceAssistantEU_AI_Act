@@ -33,10 +33,9 @@ def build_context(question, budget_words=4000, max_articles=3, margin=0.04):
         full = articles[key]
         w = len(full.split())
         if n > 0 and used + w > budget_words: # never dropt the first article no matter its length otherwise context empty
-            if w > budget_words:
-                continue # article does not fit -> drop it, better dropping instead of incomplete
-            blocks.append(full)
-            used += w
+            continue # article does not fit -> drop it, better dropping instead of incomplete
+        blocks.append(full)
+        used += w
     return "\n\n".join(blocks)
 
 def search(query, k=5):
