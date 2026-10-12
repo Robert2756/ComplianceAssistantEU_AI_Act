@@ -1,0 +1,5 @@
+{
+ "model": "intfloat/multilingual-e5-base",
+ "n_chunks": 311,
+ "chunks_sha": "26d66704738d9be53e9c869df4c1cd6da8d299f58e15d6e760890860fe1afdb0"
+}
