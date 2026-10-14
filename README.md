@@ -102,17 +102,16 @@ Die RAG- und FULL-Pipelines erzielen ähnliche Ergebnisse, auch wenn die FULL-Pi
 
 ## Limitationen
 
-- **Kleine Stichprobe:** Es gibt nur zehn Fragen, alle auf Englisch und alle zum AI Act. Die Ergebnisse zeigen Tendenzen, aber keine belastbaren Unterschiede zwischen den Pipelines.
-- **Subjektive Bewertung:** Die Antworten wurden manuell von einer Person bewertet. Die Kriterien (`correct`, `partly`, `incorrect`) sind nicht streng definiert, und es gibt keine zweite Bewertung zum Vergleich.
+- **Kleine Stichprobe:** Es gibt nur zehn Fragen, neun davon auf Englisch, eine auf deutsch und alle zum AI Act. Die Ergebnisse zeigen Tendenzen, aber keine belastbaren Unterschiede zwischen den Pipelines.
+- **Subjektive Bewertung:** Die Antworten wurden subjektiv bewertet. Die Kriterien (`correct`, `partly`, `incorrect`) sind nicht streng definiert, und es gibt keine zweite Bewertung zum Vergleich.
 - **Ein einziges Modell:** Alle Pipelines verwenden `llama3.1:8b`. Ob die Ergebnisse für größere oder neuere Modelle gelten, ist offen. Besonders die No-RAG-Baseline hängt stark vom Trainingsstand des Modells ab.
-- **Retrieval nicht separat bewertet:** Bewertet wurde nur die Endantwort. Die Fehler bei Frage 6, 7 und 8 entstehen, weil der passende Artikel (Art. 113, Anhang III, Art. 51) nicht im Kontext lag. Es fehlt aber eine eigene Retrieval-Metrik, etwa ob der richtige Artikel unter den abgerufenen war.
-- **Laufzeiten nur eingeschränkt vergleichbar:** Alle Messungen stammen von einem MacBook Air mit 32 GB RAM. Die absoluten Werte lassen sich nicht übertragen, das Verhältnis zwischen den Pipelines ist aussagekräftiger. Bei Frage 8 wurde die FULL-Antwort bei 1.500 Tokens abgeschnitten.
+- **Retrieval nicht separat bewertet:** Bewertet wurde nur die Endantwort. Die Fehler bei Frage 6, 7 und 8 entstehen, weil der passende Artikel (Art. 113, Anhang III, Art. 51) nicht im Kontext lag.
+- **Laufzeiten nur eingeschränkt vergleichbar:** Alle Messungen stammen von einem MacBook Air mit 32 GB RAM. Die absoluten Werte lassen sich nicht übertragen, das Verhältnis zwischen den Pipelines ist aussagekräftiger.
 - **Keine Wiederholungen:** Jede Frage wurde nur einmal gestellt. Die Streuung zwischen mehreren Läufen wurde nicht gemessen.
 
 ## Ausblick
 
 - **Besseres Retrieval:** Eine Hybridsuche (BM25 und Embeddings), Query-Rewriting und ein getrennter Index für die Anhänge könnten die fehlenden Artikel bei Frage 6, 7 und 8 abdecken.
-- **Agentische Systeme:** Ein Agent könnte selbst prüfen, ob der abgerufene Kontext für die Frage reicht, die Suchanfrage umformulieren und erneut suchen. Er könnte auch Verweisen im Gesetzestext folgen, etwa von Art. 6(2) zu Anhang III, bevor er antwortet. Das würde genau die Fehlerfälle ansprechen, die in dieser Arbeit auftreten.
 - **Größerer Fragensatz:** Mit mehr Fragen und Referenzantworten ließe sich die Bewertung stärker standardisieren.
 
 ### Manuelle Notizen zur subjektiven Evaluation
