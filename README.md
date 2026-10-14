@@ -1,7 +1,7 @@
 # EU AI Act Compliance Assistant
 
 
-### In diesem Projekt werden drei Compliance-Assistenten verglichen, die Fragen zum AI Act beantworten. Die drei Assistenten basieren auf unterschiedlichen Pipelines, die miteinander evaluiert werden.
+### In diesem Projekt werden drei Compliance-Assistenten verglichen, die Fragen zum AI Act beantworten (http://data.europa.eu/eli/reg/2024/1689/oj). Die drei Assistenten basieren auf unterschiedlichen Pipelines, die miteinander evaluiert werden.
 
 ## Nutzung
 1. Installiere die Abhängigkeiten aus `requirements.txt`.
