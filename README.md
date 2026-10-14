@@ -1,18 +1,28 @@
 # EU AI Act Compliance Assistant
 
-Antworten zu relevanten AI Fragen sollen mit Referenz zum AI Act mithilfe einer Retrieval-Augmented-Generation-Pipeline (RAG) ausgegeben werden. Sie Pieline läuft lokal: `multilingual-e5-base` für die Suche und `llama3.1:8b` (über Ollama) für die Antwortgenerierung.
+### In diesem Projekt werden drei Compliance Assistenten miteinander verglichen, welche Fragen bezüglich des AI Acts beantworten. Die drei Assistenten basieren auf drei unterschiedlichen Pipelines, die untereinander evaluiert werden.
 
 ## Pipeline: mit RAG
+
+*Antworten zu relevanten AI Fragen sollen mit Referenz zum AI Act mithilfe einer Retrieval-Augmented-Generation-Pipeline (RAG) ausgegeben werden. Die Pieline läuft lokal: `multilingual-e5-base` für die Suche und `llama3.1:8b` (über Ollama) für die Antwortgenerierung.*
 
 ![Überblick über die RAG-Pipeline](pipeline/RAG.png)
 
 *Der AI Act wird bereinigt und in Chunks zerlegt, die eingebettet werden und nur als Suchindex dienen. Der Artikel mit dem höchsten Score wird immer vollständig an das LLM übergeben. Weitere Artikel kommen nur dazu, wenn ihr Score nah am besten Artikel liegt und das Wortbudget es zulässt.*
 
-## Baseline: ohne RAG
+## Pipeline: Kompletter AI Act als Quelle
+
+*Antworten zu relevanten AI Fragen sollen mit Referenz zum AI Act, der in seiner vollen Form als Quelle verwendet wird, ausgegeben werden. Die Pieline läuft lokal: `llama3.1:8b` (über Ollama) für die Antwortgenerierung.*
 
 ![Baseline ohne RAG](pipeline/NORAG.png)
 
 *Zum Vergleich wird der gesamte bereinigte AI Act (etwa 85.000 Tokens) ohne Retrieval direkt in den Prompt gelegt.*
+
+## Pipeline: Ohne RAG und Quellen
+
+*Antworten zu relevanten AI Fragen sollen mit Referenz zum AI Act, ohne Angabe von Quellen ausgegeben werden. Die Pieline läuft lokal: `llama3.1:8b` (über Ollama) für die Antwortgenerierung.*
+
+![Baseline ohne RAG](pipeline/NORAGNOSOURCES.png)
 
 ## Ergebnisse
 Die Antworten der Assistenten zu den zehn Fragen (./eval/questions.jsonl) wurden per Hand gegen den offiziellen AI Act bewertet. Die detaillierten Antworten und Metriken können in ./eval/results.jsonl oder results.txt eingesehen werden. Händische Notizen dazu befinden sich am Ende dieser README.
@@ -31,23 +41,25 @@ Folgende Grafik zeigt essentielle Metriken der Pipelines (gesamte Verarbeitungsd
 
 ## Interpretation
 
-# No RAG
+### No RAG
 - schnellste Verarbeitungsdauer
 - Halluzinationen, falsche Quellenangaben und Enthaltung von Informationen die höchstwahrscheinlich auf eine veraltete Version des AI Acts zurückzuführen sind
 
-# RAG
+### RAG
 - Verarbeitungsdauer minimal langsamer als No RAG, vereinzelt schneller
 - meist korrekte Angabe der Quelle im AI Act (Artikels und Paragraph)
 - keine Halluzinationen, ehrliche Antwort auf unlösbare Frage Nummer 10
 - Problem: wenn Artikel in mehrere Chunks geteilt wird im Embeddingmodell kein Kontext verwendet -> spätere Chunks verlieren bezug zu vorherigen; das führt dazu dass essentielle Chunks nicht an das LLM weitergegeben werden; LLM antwortet basierend auf falschen oder unvollständigen Informationen (Frage 6 und 7)
 
-# FULL
+### FULL
 - sehr lange Verarbeitungsdauer, deutlich länger als die beiden anderen Pipelines
 - keine Halluziinationen, ehrliche Antwort auf unlösbare Frage Nummer 10
 - meistens keine Quellenangaben zum AI Act! Es fehlen die Paragraphen oder Unterpunkte der Paragraphen auch wenn die Informationen meist korrekt sind (z.b. Frage 4)
 
+### Urteil
+Es zeigt sich, dass die RAG und FULL Pipelines ähnliche Resultate erziehlen auch wenn die FULL Pipeline minimal weniger Fehler macht. Jedoch zitiert die RAG Pipeline den AI Act konsistenter und verbraucht weitaus weniger Verarbeitungszeit als die FULL Pipeline. Dabei zeigt sich, dass die RAG Pipeline eine deutlich effizienter Lösung mit ähnlicher Qualität darstellt.
 
-# Händische Notizen zur subjektiven Evaluation
+### Händische Notizen zur subjektiven Evaluation
 Question 1: Which AI practices are prohibited under the AI Act?
 --- NONE | 26s | prompt 55 tok | out 315 tok | ctx 4096 ---
 Article -> correct (5)
