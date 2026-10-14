@@ -30,7 +30,7 @@
 ![Baseline ohne RAG](pipeline/NORAG.png)
 
 
-**Zum Vergleich wird der gesamte bereinigte AI Act (etwa 85.000 Tokens) ohne Retrieval direkt in den Prompt eingefügt.**
+**Zum Vergleich wird der gesamte bereinigte AI Act (etwa 65.000 Tokens) ohne Retrieval direkt in den Prompt eingefügt.**
 
 
 ## Pipeline: Ohne RAG und Quellen
@@ -82,7 +82,7 @@ Die folgende Grafik zeigt wichtige Metriken der Pipelines: die gesamte Verarbeit
 
 - Meist korrekte Quellenangaben im AI Act (Artikel und Absatz)
 
-- Keine Halluzinationen; ehrliche Antwort auf die nicht beantwortbare Frage 10
+- Meist keine Halluzinationen; ehrliche Antwort auf die nicht beantwortbare Frage 10; Vereinzelt ungenaue Antwort bei fehlenden Quellen
 
 - Problem: Wenn ein Artikel in mehrere Chunks aufgeteilt wird, berücksichtigt das Embedding-Modell keinen Kontext. Dadurch verlieren spätere Chunks den Bezug zu den vorherigen. Das kann dazu führen, dass wesentliche Chunks nicht an das LLM weitergegeben werden und das LLM auf Grundlage falscher oder unvollständiger Informationen antwortet (Fragen 6 und 7).
 
@@ -91,7 +91,7 @@ Die folgende Grafik zeigt wichtige Metriken der Pipelines: die gesamte Verarbeit
 
 - Sehr lange Verarbeitungsdauer, deutlich länger als bei den beiden anderen Pipelines
 
-- Keine Halluzinationen; ehrliche Antwort auf die nicht beantwortbare Frage 10
+- Keine Halluzinationen; ehrliche Antwort auf die nicht beantwortbare Frage 10; Antwort zu Frage 8 abgeschnitten da Tokenlimit erreicht
 
 - Häufig fehlen Quellenangaben zum AI Act. Es fehlen insbesondere Absatz- oder Unterabsatznummern, obwohl die Informationen meist korrekt sind (z. B. bei Frage 4).
 
@@ -100,6 +100,20 @@ Die folgende Grafik zeigt wichtige Metriken der Pipelines: die gesamte Verarbeit
 
 Die RAG- und FULL-Pipelines erzielen ähnliche Ergebnisse, auch wenn die FULL-Pipeline geringfügig weniger Fehler macht. Die RAG-Pipeline verweist jedoch konsistenter auf den AI Act und benötigt deutlich weniger Verarbeitungszeit als die FULL-Pipeline. Damit erweist sich RAG als wesentlich effizientere Lösung bei vergleichbarer Qualität.
 
+## Limitationen
+
+- **Kleine Stichprobe:** Es gibt nur zehn Fragen, alle auf Englisch und alle zum AI Act. Die Ergebnisse zeigen Tendenzen, aber keine belastbaren Unterschiede zwischen den Pipelines.
+- **Subjektive Bewertung:** Die Antworten wurden manuell von einer Person bewertet. Die Kriterien (`correct`, `partly`, `incorrect`) sind nicht streng definiert, und es gibt keine zweite Bewertung zum Vergleich.
+- **Ein einziges Modell:** Alle Pipelines verwenden `llama3.1:8b`. Ob die Ergebnisse für größere oder neuere Modelle gelten, ist offen. Besonders die No-RAG-Baseline hängt stark vom Trainingsstand des Modells ab.
+- **Retrieval nicht separat bewertet:** Bewertet wurde nur die Endantwort. Die Fehler bei Frage 6, 7 und 8 entstehen, weil der passende Artikel (Art. 113, Anhang III, Art. 51) nicht im Kontext lag. Es fehlt aber eine eigene Retrieval-Metrik, etwa ob der richtige Artikel unter den abgerufenen war.
+- **Laufzeiten nur eingeschränkt vergleichbar:** Alle Messungen stammen von einem MacBook Air mit 32 GB RAM. Die absoluten Werte lassen sich nicht übertragen, das Verhältnis zwischen den Pipelines ist aussagekräftiger. Bei Frage 8 wurde die FULL-Antwort bei 1.500 Tokens abgeschnitten.
+- **Keine Wiederholungen:** Jede Frage wurde nur einmal gestellt. Die Streuung zwischen mehreren Läufen wurde nicht gemessen.
+
+## Ausblick
+
+- **Besseres Retrieval:** Eine Hybridsuche (BM25 und Embeddings), Query-Rewriting und ein getrennter Index für die Anhänge könnten die fehlenden Artikel bei Frage 6, 7 und 8 abdecken.
+- **Agentische Systeme:** Ein Agent könnte selbst prüfen, ob der abgerufene Kontext für die Frage reicht, die Suchanfrage umformulieren und erneut suchen. Er könnte auch Verweisen im Gesetzestext folgen, etwa von Art. 6(2) zu Anhang III, bevor er antwortet. Das würde genau die Fehlerfälle ansprechen, die in dieser Arbeit auftreten.
+- **Größerer Fragensatz:** Mit mehr Fragen und Referenzantworten ließe sich die Bewertung stärker standardisieren.
 
 ### Manuelle Notizen zur subjektiven Evaluation
 
