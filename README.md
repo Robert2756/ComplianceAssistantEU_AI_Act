@@ -30,7 +30,7 @@
 ![Baseline ohne RAG](pipeline/NORAG.png)
 
 
-**Zum Vergleich wird der gesamte bereinigte AI Act (etwa 65.000 Tokens) ohne Retrieval direkt in den Prompt eingefügt.**
+**Zum Vergleich wird der gesamte bereinigte AI Act (etwa 67.000 Tokens) ohne Retrieval direkt in den Prompt eingefügt.**
 
 
 ## Pipeline: Ohne RAG und Quellen
@@ -84,7 +84,7 @@ Die folgende Grafik zeigt wichtige Metriken der Pipelines: die gesamte Verarbeit
 
 - Meist keine Halluzinationen; ehrliche Antwort auf die nicht beantwortbare Frage 10; Vereinzelt ungenaue Antwort bei fehlenden Quellen
 
-- Problem: Wenn ein Artikel in mehrere Chunks aufgeteilt wird, berücksichtigt das Embedding-Modell keinen Kontext. Dadurch verlieren spätere Chunks den Bezug zu den vorherigen. Das kann dazu führen, dass wesentliche Chunks nicht an das LLM weitergegeben werden und das LLM auf Grundlage falscher oder unvollständiger Informationen antwortet (Fragen 6 und 7).
+- Problem: Wenn ein Artikel in mehrere Chunks aufgeteilt wird, berücksichtigt das Embedding-Modell keinen Kontext. Dadurch verlieren spätere Chunks den Bezug zu den vorherigen. Das kann dazu führen, dass wesentliche Chunks nicht an das LLM weitergegeben werden und das LLM auf Grundlage falscher oder unvollständiger Informationen antwortet (Fragen 6, 7 und 8).
 
 
 ### FULL
